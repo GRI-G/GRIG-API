@@ -170,7 +170,7 @@ export class Users {
   public static async getRanking(
     this: ModelType<Users> & typeof Users,
     options: INFORMATION_DTO.GetRankingInput,
-  ): Promise<Array<DocumentType<Users>>> {
+  ): Promise<DocumentType<Users>[]> {
     const generationOption = { generation: options.generation };
     const userList = await this.find({
       certified: true,

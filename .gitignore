@@ -28,3 +28,6 @@ dist
 
 # serverless
 .serverless
+
+# yarn
+yarn-error.log

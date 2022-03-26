@@ -21,7 +21,7 @@ import {
 const createRes: Function = (
   status: number,
   body?: Object,
-  headers?: Object
+  headers?: Object,
 ) => {
   return {
     statusCode: status,
@@ -33,7 +33,7 @@ const createRes: Function = (
 exports.authUserByOAuth = async (
   event: serverless_DTO.eventType,
   _: any,
-  cb: Function
+  cb: Function,
 ) => {
   const data = event.queryStringParameters;
   const access_token = (await getAccessTokenByCode(data.code)).access_token;
@@ -57,14 +57,14 @@ exports.authUserByOAuth = async (
   return createRes(
     302,
     {},
-    { Location: `${process.env.AUTH_BASEURL}${page}?code=${code}` }
+    { Location: `${process.env.AUTH_BASEURL}${page}?code=${code}` },
   );
 };
 
 exports.authEmail = async (
   event: serverless_DTO.eventType,
   _: any,
-  cb: Function
+  cb: Function,
 ) => {
   const searchPrams = new URLSearchParams(event.body);
   const code = searchPrams.get("code");
@@ -94,7 +94,7 @@ exports.authUserByEmail = async (event: serverless_DTO.eventType, _: any) => {
     })
     .then((): void => console.log("MongoDB connected"))
     .catch((err: Error): void =>
-      console.log("Failed to connect MongoDB: ", err)
+      console.log("Failed to connect MongoDB: ", err),
     );
   const dataId = event.pathParameters["token"];
   const data = await CodeModel.findById(dataId);
@@ -121,6 +121,6 @@ exports.authUserByEmail = async (event: serverless_DTO.eventType, _: any) => {
   return createRes(
     302,
     {},
-    { Location: `${process.env.AUTH_BASEURL}complete.html` }
+    { Location: `${process.env.AUTH_BASEURL}complete.html` },
   );
 };
