@@ -1,6 +1,6 @@
 {
   "name": "github-ranking-for-gsm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repository": "https://github.com/sunrabbit123/Github-Rangkin-for-GSM.git",
   "author": "sunrabbit123 <qudwls185@naver.com>",
   "license": "SPDX",
@@ -11,6 +11,7 @@
     "delete": "ts-node ./util/delete.ts"
   },
   "dependencies": {
+    "@fxts/core": "^0.5.0",
     "@typegoose/typegoose": "^8.1.1",
     "apollo-server-lambda": "^3.0.0",
     "axios": "^0.21.1",

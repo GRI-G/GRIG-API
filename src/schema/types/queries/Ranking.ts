@@ -4,6 +4,7 @@ import * as mongoose from "mongoose";
 import { INFORMATION_DTO } from "../../../DTO";
 import { UserModel } from "../../../model/users";
 import { getKindOfGenaration } from "../../../service/user";
+import { sortBy } from "@fxts/core";
 
 export const userRanking = {
   type: "User",
@@ -23,7 +24,7 @@ export const userRanking = {
       })
       .then((): void => console.log("MongoDB connected"))
       .catch((err: Error): void =>
-        console.log("Failed to connect MongoDB: ", err)
+        console.log("Failed to connect MongoDB: ", err),
       );
     return UserModel.getRanking(args);
   },
@@ -41,7 +42,7 @@ export const hasGeneration = {
     const result = await getKindOfGenaration();
     if (result) {
       db.disconnect();
-      return result;
+      return sortBy((r) => r._id, result);
     }
   },
 };

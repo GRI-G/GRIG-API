@@ -102,7 +102,7 @@ export class Users {
   }
   public async updateActivity(
     this: DocumentType<Users>,
-    arg: UserDTO.UserUpdateInput
+    arg: UserDTO.UserUpdateInput,
   ): Promise<DocumentType<Users, BeAnObject> | undefined> {
     const {
       contributions,
@@ -157,7 +157,7 @@ export class Users {
   }
   public async updateGeneration(
     this: DocumentType<Users>,
-    generation: number
+    generation: number,
   ): Promise<void> {
     this.generation = generation;
     await this.save();
@@ -169,17 +169,13 @@ export class Users {
 
   public static async getRanking(
     this: ModelType<Users> & typeof Users,
-    options: INFORMATION_DTO.GetRankingInput
-  ): Promise<Array<DocumentType<Users>>> {
+    options: INFORMATION_DTO.GetRankingInput,
+  ): Promise<DocumentType<Users>[]> {
     const generationOption = { generation: options.generation };
-    const option = Object.assign(
-      {},
-      {
-        certified: true,
-      },
-      options.generation == 0 ? {} : generationOption
-    );
-    const userList = await this.find(option)
+    const userList = await this.find({
+      certified: true,
+      ...(options.generation == 0 ? {} : generationOption),
+    })
       .sort(INFORMATION_DTO.RankingSortCriteria[options.criteria])
       .skip((options.page - 1) * options.count)
       .limit(options.count)
@@ -189,7 +185,7 @@ export class Users {
 
   public static async findUserFromNickname(
     this: ModelType<Users> & typeof Users,
-    nickname: string
+    nickname: string,
   ): Promise<DocumentType<Users> | null> {
     const user = await this.findOne({ nickname: nickname }).exec();
     return user;
