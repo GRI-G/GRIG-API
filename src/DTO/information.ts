@@ -1,14 +1,16 @@
+export type CriteriaValueType = {
+  [key: string]: number;
+};
 export type RankingSortCriteriaType = {
-  [key: string]: Object;
-  contributions: Object;
-  pullRequests: Object;
-  issues: Object;
-  repositoriesContributedTo: Object;
-  publicRepositories: Object;
-  stared: Object;
-  forked: Object;
-  followers: Object;
-  following: Object;
+  contributions: CriteriaValueType;
+  pullRequests: CriteriaValueType;
+  issues: CriteriaValueType;
+  repositoriesContributedTo: CriteriaValueType;
+  publicRepositories: CriteriaValueType;
+  stared: CriteriaValueType;
+  forked: CriteriaValueType;
+  followers: CriteriaValueType;
+  following: CriteriaValueType;
 };
 
 export const RankingSortCriteria: RankingSortCriteriaType = {
@@ -26,6 +28,8 @@ export const RankingSortCriteria: RankingSortCriteriaType = {
 export interface GetRankingInput {
   count: number;
   page: number;
-  criteria: string;
+  criteria: keyof typeof RankingSortCriteria;
   generation: number;
 }
+
+export type Ranking = keyof typeof RankingSortCriteria;
