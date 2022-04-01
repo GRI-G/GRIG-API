@@ -101,7 +101,13 @@ exports.authUserByEmail = async (event: serverless_DTO.eventType, _: any) => {
 
   const email: string = data.email;
   const nickname: string = data.nickname;
-  const generation: number = Number(email.slice(1, 3)) - 16;
+  const generation: number = /^(student\d{6}|s\d{5})@gsm.hs.kr$/.test(email)
+    ? Number(email.replace(/[^0-9]/g, "").slice(0, 2)) - 16
+    : 0;
+
+  if (generation === 0) {
+    createRes(404, { message: "GSM 학생이 아닙니다." });
+  }
 
   const user = await UserModel.findUserFromNickname(nickname);
   try {
