@@ -16,6 +16,7 @@ import {
   createToken,
   updateUserInformation,
   findUserByNickname,
+  testIsGSMEmail,
 } from "./util/user";
 
 const createRes: Function = (
@@ -33,7 +34,7 @@ const createRes: Function = (
 exports.authUserByOAuth = async (
   event: serverless_DTO.eventType,
   _: any,
-  cb: Function,
+  __: Function,
 ) => {
   const data = event.queryStringParameters;
   const access_token = (await getAccessTokenByCode(data.code)).access_token;
@@ -42,7 +43,7 @@ exports.authUserByOAuth = async (
 
   let page = "complete.html";
   const user = await findUserByNickname(nickname);
-  if (!(user?.certified == true)) {
+  if (!user?.certified) {
     if (!user) {
       await createUser({
         accessToken: access_token,
@@ -64,13 +65,13 @@ exports.authUserByOAuth = async (
 exports.authEmail = async (
   event: serverless_DTO.eventType,
   _: any,
-  cb: Function,
+  __: Function,
 ) => {
   const searchPrams = new URLSearchParams(event.body);
   const code = searchPrams.get("code");
   const email = searchPrams.get("email");
 
-  if (email?.slice(-10) !== "@gsm.hs.kr" || !email?.startsWith("s")) {
+  if (testIsGSMEmail(email)) {
     return createRes(400, { detail: "GSM 학생 계정이어야합니다." });
   }
 
@@ -101,7 +102,7 @@ exports.authUserByEmail = async (event: serverless_DTO.eventType, _: any) => {
 
   const email: string = data.email;
   const nickname: string = data.nickname;
-  const generation: number = /^(student\d{6}|s\d{5})@gsm.hs.kr$/.test(email)
+  const generation: number = testIsGSMEmail(email)
     ? Number(email.replace(/[^0-9]/g, "").slice(0, 2)) - 16
     : 0;
 

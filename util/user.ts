@@ -24,14 +24,14 @@ export const createUser: Function = async (data: CreateUserInterface) => {
     })
     .then((): void => console.log("MongoDB connected"))
     .catch((err: Error): void =>
-      console.log("Failed to connect MongoDB: ", err)
+      console.log("Failed to connect MongoDB: ", err),
     );
   const result = await new UserModel(data).save();
   return result;
 };
 
 export const findUserByNickname: Function = async (
-  nickname: string
+  nickname: string,
 ): Promise<DocumentType<Users> | null> => {
   mongoose
     .connect(process.env.MongoDBUrl ?? "", {
@@ -42,7 +42,7 @@ export const findUserByNickname: Function = async (
     })
     .then((): void => console.log("MongoDB connected"))
     .catch((err: Error): void =>
-      console.log("Failed to connect MongoDB: ", err)
+      console.log("Failed to connect MongoDB: ", err),
     );
   const result = await UserModel.findOne({ nickname: nickname });
   return result;
@@ -61,7 +61,7 @@ export const createToken: Function = async (data: {
     })
     .then((): void => console.log("MongoDB connected"))
     .catch((err: Error): void =>
-      console.log("Failed to connect MongoDB: ", err)
+      console.log("Failed to connect MongoDB: ", err),
     );
   const result = await new CodeModel(data).save();
   return result;
@@ -73,7 +73,7 @@ interface RepositoriesNode {
 }
 
 export const updateUserInformation: Function = async (
-  user: DocumentType<Users, BeAnObject>
+  user: DocumentType<Users, BeAnObject>,
 ) => {
   const { nickname } = user;
   const userInform = await GithubAPI.getActivityByUser(user.nickname);
@@ -93,13 +93,13 @@ export const updateUserInformation: Function = async (
       (acc: number, cur: RepositoriesNode, _: number) => {
         return acc + cur.stargazers.totalCount;
       },
-      0
+      0,
     ),
     forked: repositories.reduce(
       (acc: number, cur: RepositoriesNode, _: number) => {
         return acc + cur.forkCount;
       },
-      0
+      0,
     ),
     followers: userInform.followers.totalCount,
     following: userInform.following.totalCount,
@@ -112,7 +112,7 @@ export const updateUserInformation: Function = async (
 };
 
 export const updateUserListInformation: Function = async (
-  userList: DocumentType<Users, BeAnObject>[]
+  userList: DocumentType<Users, BeAnObject>[],
 ) => {
   return Promise.all(
     userList.map((u: DocumentType<Users>) => {
@@ -124,7 +124,7 @@ export const updateUserListInformation: Function = async (
         console.log(e);
         return nickname;
       }
-    })
+    }),
   );
 };
 
@@ -151,3 +151,6 @@ export const deleteRemainNotCertifiedUser: Function =
     console.log("인증처리가 되지않은 유저들 삭제 완료");
     return;
   };
+
+export const testIsGSMEmail: Function = (email: string): boolean =>
+  /^(student\d{6}|s\d{5})@gsm.hs.kr$/.test(email);
