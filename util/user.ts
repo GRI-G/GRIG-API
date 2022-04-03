@@ -6,7 +6,7 @@ import { UserModel, Users } from "../src/model/users";
 import { UserDTO } from "../src/DTO";
 import { GithubAPI } from "../src/util";
 import { BeAnObject } from "@typegoose/typegoose/lib/types";
-import { connectMongoDB } from "./db";
+import { connectMongoDB } from "../src/util/db";
 
 export interface CreateUserInterface {
   access_token: string;

@@ -1,5 +1,5 @@
 import { CodeModel } from "../src/model/code";
-import { connectMongoDB } from "./db";
+import { connectMongoDB } from "../src/util/db";
 
 export const deleteRemainCode: Function = connectMongoDB(
   async (): Promise<void> => {

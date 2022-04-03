@@ -1,6 +1,5 @@
 "use strict";
 
-import * as mongoose from "mongoose";
 import { APIGatewayEvent } from "aws-lambda";
 
 import { serverless_DTO } from "./DTO";
@@ -19,6 +18,7 @@ import {
   findUserByNickname,
   testIsGSMEmail,
 } from "./util/user";
+import { connectMongoDB } from "./src/util/db";
 
 const createRes: Function = (
   status: number,
@@ -29,25 +29,6 @@ const createRes: Function = (
     statusCode: status,
     body: JSON.stringify(body),
     headers: headers,
-  };
-};
-
-const connectMongoDB: Function = (
-  next: (event: APIGatewayEvent) => Response,
-) => {
-  return async (event: APIGatewayEvent) => {
-    const db = await mongoose.connect(process.env.MongoDBUrl ?? "", {
-      useFindAndModify: true,
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    });
-    const result = await next(event);
-
-    if (result) {
-      db.disconnect();
-    }
-    return result;
   };
 };
 
