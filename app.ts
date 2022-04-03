@@ -9,4 +9,4 @@ const apollo = new ApolloServer({
   debug: DEBUG,
 });
 
-exports.graphqlHandler = apollo.createHandler({});
+export const graphqlHandler = apollo.createHandler({});

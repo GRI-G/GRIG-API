@@ -1,6 +1,7 @@
 "use strict";
 
 import * as mongoose from "mongoose";
+import { APIGatewayEvent } from "aws-lambda";
 
 import { serverless_DTO } from "./DTO";
 
@@ -23,7 +24,7 @@ const createRes: Function = (
   status: number,
   body?: Object,
   headers?: Object,
-) => {
+): serverless_DTO.Response => {
   return {
     statusCode: status,
     body: JSON.stringify(body),
@@ -31,8 +32,27 @@ const createRes: Function = (
   };
 };
 
+const connectMongoDB: Function = (
+  next: (event: APIGatewayEvent) => Response,
+) => {
+  return async (event: APIGatewayEvent) => {
+    const db = await mongoose.connect(process.env.MongoDBUrl ?? "", {
+      useFindAndModify: true,
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useUnifiedTopology: true,
+    });
+    const result = await next(event);
+
+    if (result) {
+      db.disconnect();
+    }
+    return result;
+  };
+};
+
 exports.authUserByOAuth = async (
-  event: serverless_DTO.eventType,
+  event: APIGatewayEvent,
   _: any,
   __: Function,
 ) => {
@@ -62,11 +82,7 @@ exports.authUserByOAuth = async (
   );
 };
 
-exports.authEmail = async (
-  event: serverless_DTO.eventType,
-  _: any,
-  __: Function,
-) => {
+exports.authEmail = async (event: APIGatewayEvent, _: any, __: Function) => {
   const searchPrams = new URLSearchParams(event.body);
   const code = searchPrams.get("code");
   const email = searchPrams.get("email");
@@ -85,49 +101,40 @@ exports.authEmail = async (
   return createRes(204);
 };
 
-exports.authUserByEmail = async (event: serverless_DTO.eventType, _: any) => {
-  mongoose
-    .connect(process.env.MongoDBUrl ?? "", {
-      useFindAndModify: false,
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    })
-    .then((): void => console.log("MongoDB connected"))
-    .catch((err: Error): void =>
-      console.log("Failed to connect MongoDB: ", err),
+exports.authUserByEmail = connectMongoDB(
+  async (event: APIGatewayEvent, _: any) => {
+    const dataId = event.pathParameters["token"];
+    const data = await CodeModel.findById(dataId);
+
+    const email: string = data.email;
+    const nickname: string = data.nickname;
+    const generation: number = testIsGSMEmail(email)
+      ? Number(email.replace(/[^0-9]/g, "").slice(0, 2)) - 16
+      : 0;
+
+    if (generation === 0) {
+      createRes(404, { message: "GSM 학생이 아닙니다." });
+    }
+
+    const user = await UserModel.findUserFromNickname(nickname);
+    try {
+      await user.updateGeneration(generation);
+      console.log("Success update Generation");
+      await user.setCertifiedTrue();
+      console.log("Success Set Certified True");
+      await updateUserInformation(user);
+      console.log("Update User Information");
+    } catch (e: any) {
+      console.error(e);
+    }
+
+    await CodeModel.findByIdAndDelete(dataId);
+    console.log("Success find By Id and delete data Id");
+
+    return createRes(
+      302,
+      {},
+      { Location: `${process.env.AUTH_BASEURL}complete.html` },
     );
-  const dataId = event.pathParameters["token"];
-  const data = await CodeModel.findById(dataId);
-
-  const email: string = data.email;
-  const nickname: string = data.nickname;
-  const generation: number = testIsGSMEmail(email)
-    ? Number(email.replace(/[^0-9]/g, "").slice(0, 2)) - 16
-    : 0;
-
-  if (generation === 0) {
-    createRes(404, { message: "GSM 학생이 아닙니다." });
-  }
-
-  const user = await UserModel.findUserFromNickname(nickname);
-  try {
-    await user.updateGeneration(generation);
-    console.log("Success update Generation");
-    await user.setCertifiedTrue();
-    console.log("Success Set Certified True");
-    await updateUserInformation(user);
-    console.log("Update User Information");
-  } catch (e: any) {
-    console.error(e);
-  }
-
-  await CodeModel.findByIdAndDelete(dataId);
-  console.log("Success find By Id and delete data Id");
-
-  return createRes(
-    302,
-    {},
-    { Location: `${process.env.AUTH_BASEURL}complete.html` },
-  );
-};
+  },
+);

@@ -1,9 +1,10 @@
 import { intArg, stringArg } from "nexus";
-import * as mongoose from "mongoose";
 
 import { INFORMATION_DTO } from "../../../DTO";
 import { UserModel } from "../../../model/users";
 import { getKindOfGenaration } from "../../../service/user";
+import { connectMongoDB } from "../../../util/db";
+
 import { sortBy } from "@fxts/core";
 
 export const userRanking = {
@@ -14,35 +15,15 @@ export const userRanking = {
     page: intArg(),
     generation: intArg(),
   },
-  resolve: async (_: any, args: INFORMATION_DTO.GetRankingInput, __: any) => {
-    mongoose
-      .connect(process.env.MongoDBUrl ?? "", {
-        useFindAndModify: false,
-        useNewUrlParser: true,
-        useCreateIndex: true,
-        useUnifiedTopology: true,
-      })
-      .then((): void => console.log("MongoDB connected"))
-      .catch((err: Error): void =>
-        console.log("Failed to connect MongoDB: ", err),
-      );
-    return UserModel.getRanking(args);
+  resolve: (_: any, args: INFORMATION_DTO.GetRankingInput, __: any) => {
+    return connectMongoDB(() => UserModel.getRanking(args))();
   },
 };
 
 export const hasGeneration = {
   type: "Generation",
-  resolve: async (_: any, __: any, ___: any) => {
-    const db = await mongoose.connect(process.env.MongoDBUrl ?? "", {
-      useFindAndModify: false,
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    });
-    const result = await getKindOfGenaration();
-    if (result) {
-      db.disconnect();
-      return sortBy((r) => r._id, result);
-    }
-  },
+  resolve: async (_: any, __: any, ___: any) =>
+    await connectMongoDB(async () =>
+      sortBy((r) => r._id, await getKindOfGenaration()),
+    )(),
 };
