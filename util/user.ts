@@ -6,6 +6,7 @@ import { UserModel, Users } from "../src/model/users";
 import { UserDTO } from "../src/DTO";
 import { GithubAPI } from "../src/util";
 import { BeAnObject } from "@typegoose/typegoose/lib/types";
+import { connectMongoDB } from "./db";
 
 export interface CreateUserInterface {
   access_token: string;
@@ -14,58 +15,19 @@ export interface CreateUserInterface {
   generation: number;
 }
 
-export const createUser: Function = async (data: CreateUserInterface) => {
-  mongoose
-    .connect(process.env.MongoDBUrl ?? "", {
-      useFindAndModify: false,
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    })
-    .then((): void => console.log("MongoDB connected"))
-    .catch((err: Error): void =>
-      console.log("Failed to connect MongoDB: ", err),
-    );
-  const result = await new UserModel(data).save();
-  return result;
-};
+export const createUser: Function = connectMongoDB(
+  async (data: CreateUserInterface) => await new UserModel(data).save(),
+);
 
-export const findUserByNickname: Function = async (
-  nickname: string,
-): Promise<DocumentType<Users> | null> => {
-  mongoose
-    .connect(process.env.MongoDBUrl ?? "", {
-      useFindAndModify: false,
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    })
-    .then((): void => console.log("MongoDB connected"))
-    .catch((err: Error): void =>
-      console.log("Failed to connect MongoDB: ", err),
-    );
-  const result = await UserModel.findOne({ nickname: nickname });
-  return result;
-};
+export const findUserByNickname: Function = connectMongoDB(
+  async (nickname: string): Promise<DocumentType<Users> | null> =>
+    await UserModel.findOne({ nickname: nickname }),
+);
 
-export const createToken: Function = async (data: {
-  email: string;
-  nickname: string;
-}) => {
-  mongoose
-    .connect(process.env.MongoDBUrl ?? "", {
-      useFindAndModify: false,
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    })
-    .then((): void => console.log("MongoDB connected"))
-    .catch((err: Error): void =>
-      console.log("Failed to connect MongoDB: ", err),
-    );
-  const result = await new CodeModel(data).save();
-  return result;
-};
+export const createToken: Function = connectMongoDB(
+  async (data: { email: string; nickname: string }) =>
+    await new CodeModel(data).save(),
+);
 
 interface RepositoriesNode {
   forkCount: number;
@@ -128,7 +90,7 @@ export const updateUserListInformation: Function = async (
   );
 };
 
-export const updateAllUserInformation: Function = async () => {
+export const updateAllUserInformation: Function = connectMongoDB(async () => {
   const db = await mongoose.connect(process.env.MongoDBUrl ?? "", {
     useFindAndModify: true,
     useNewUrlParser: true,
@@ -143,7 +105,7 @@ export const updateAllUserInformation: Function = async () => {
     db.disconnect();
   }
   return;
-};
+});
 
 export const deleteRemainNotCertifiedUser: Function =
   async (): Promise<void> => {

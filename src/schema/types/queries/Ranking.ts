@@ -15,9 +15,8 @@ export const userRanking = {
     page: intArg(),
     generation: intArg(),
   },
-  resolve: (_: any, args: INFORMATION_DTO.GetRankingInput, __: any) => {
-    return connectMongoDB(() => UserModel.getRanking(args))();
-  },
+  resolve: (_: any, args: INFORMATION_DTO.GetRankingInput, __: any) =>
+    connectMongoDB(() => UserModel.getRanking(args))(),
 };
 
 export const hasGeneration = {
