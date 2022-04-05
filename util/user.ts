@@ -107,12 +107,13 @@ export const updateAllUserInformation: Function = connectMongoDB(async () => {
   return;
 });
 
-export const deleteRemainNotCertifiedUser: Function =
+export const deleteRemainNotCertifiedUser: Function = connectMongoDB(
   async (): Promise<void> => {
     await UserModel.deleteMany({ certified: false });
     console.log("인증처리가 되지않은 유저들 삭제 완료");
     return;
-  };
+  },
+);
 
 export const testIsGSMEmail: Function = (email: string): boolean =>
   /^(student\d{6}|s\d{5})@gsm.hs.kr$/.test(email);
