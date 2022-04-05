@@ -1,11 +1,14 @@
 import { deleteRemainCode } from "./code";
 import { deleteRemainNotCertifiedUser } from "./user";
 
-async function deleteRemainDocument(): Promise<void> {
+async function deleteRemainDocument(): Promise<string> {
   await deleteRemainNotCertifiedUser();
   await deleteRemainCode();
-  return;
+  return "finish";
 }
 
 require("dotenv").config();
-deleteRemainDocument();
+deleteRemainDocument().then((a) => {
+  console.log(a);
+  process.exit();
+});
