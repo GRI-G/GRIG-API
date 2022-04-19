@@ -94,7 +94,7 @@ exports.authUserByEmail = connectMongoDB(
       : 0;
 
     if (generation === 0) {
-      createRes(404, { message: "GSM 학생이 아닙니다." });
+      return createRes(404, { message: "GSM 학생이 아닙니다." });
     }
 
     const user = await UserModel.findUserFromNickname(nickname);
