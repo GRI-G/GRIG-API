@@ -93,8 +93,8 @@ exports.authUserByEmail = connectMongoDB(
       ? Number(email.replace(/[^0-9]/g, "").slice(0, 2)) - 16
       : 0;
 
-    if (!generation === 0) {
-      createRes(404, { message: "GSM 학생이 아닙니다." });
+    if (generation === 0) {
+      return createRes(404, { message: "GSM 학생이 아닙니다." });
     }
 
     const user = await UserModel.findUserFromNickname(nickname);
