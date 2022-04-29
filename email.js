@@ -20,10 +20,7 @@ function Timer() {
 }
 
 function isGSMEmail() {
-  return !(
-    emailInput.value.slice(-10) !== "@gsm.hs.kr" ||
-    !emailInput.value.startsWith("s")
-  );
+  return /^(student\d{6}|s\d{5})@gsm.hs.kr$/.test(email);
 }
 function submitAndStartTimer() {
   faildSendMessage.style.display = "none";
