@@ -20,7 +20,7 @@ function Timer() {
 }
 
 function isGSMEmail() {
-  return /^(student\d{6}|s\d{5})@gsm.hs.kr$/.test(email);
+  return /^(student\d{6}|s\d{5})@gsm.hs.kr$/.test(emailInput.value);
 }
 function submitAndStartTimer() {
   faildSendMessage.style.display = "none";
