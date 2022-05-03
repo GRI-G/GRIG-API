@@ -68,7 +68,7 @@ exports.authEmail = async (event: APIGatewayEvent, _: any, __: Function) => {
   const code = searchPrams.get("code");
   const email = searchPrams.get("email");
 
-  if (testIsGSMEmail(email)) {
+  if (!testIsGSMEmail(email)) {
     return createRes(400, { detail: "GSM 학생 계정이어야합니다." });
   }
 
