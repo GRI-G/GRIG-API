@@ -1,5 +1,5 @@
 export type CriteriaValueType = {
-  [key: string]: number;
+  [key: string]: 1 | -1;
 };
 export type RankingSortCriteriaType = {
   contributions: CriteriaValueType;
