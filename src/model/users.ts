@@ -102,7 +102,7 @@ export class Users {
   }
   public async updateActivity(
     this: DocumentType<Users>,
-    arg: UserDTO.UserUpdateInput,
+    args: UserDTO.UserUpdateInput,
   ): Promise<DocumentType<Users, BeAnObject> | undefined> {
     const {
       contributions,
@@ -124,7 +124,7 @@ export class Users {
       email,
       bio,
       twitter_username,
-    } = arg;
+    } = args;
 
     this.contributions = contributions;
     this.pullRequests = pullRequests;
@@ -172,7 +172,7 @@ export class Users {
     options: INFORMATION_DTO.GetRankingInput,
   ): Promise<DocumentType<Users>[]> {
     const generationOption = { generation: options.generation };
-    const userList = await this.find({
+    return this.find({
       certified: true,
       ...(options.generation == 0 ? {} : generationOption),
     })
@@ -180,15 +180,13 @@ export class Users {
       .skip((options.page - 1) * options.count)
       .limit(options.count)
       .exec();
-    return userList;
   }
 
   public static async findUserFromNickname(
     this: ModelType<Users> & typeof Users,
     nickname: string,
   ): Promise<DocumentType<Users> | null> {
-    const user = await this.findOne({ nickname: nickname }).exec();
-    return user;
+    return this.findOne({ nickname }).exec();
   }
 }
 

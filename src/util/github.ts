@@ -53,7 +53,7 @@ const getGraphQLApi: Function = (variables: Object) => {
 };
 
 export const getUserByToken: Function = async (
-  token: string
+  token: string,
 ): Promise<{ name: string; nickname: string }> => {
   const header: Object = {
     Accept: "application/vnd.github.cloak-preview+json",
@@ -63,15 +63,15 @@ export const getUserByToken: Function = async (
     url: getUserByTokenUrl,
     method: "GET",
     data: {},
-    header: header,
+    header,
   };
   const userData: AxiosResponse = await sendRequest(body);
   const { name, login } = userData.data;
-  return { name: name, nickname: login };
+  return { name, nickname: login };
 };
 
 export const getUserByNickName: Function = async (
-  nickname: string
+  nickname: string,
 ): Promise<UserDTO.UserInform> => {
   const header = {
     "Content-Type": "application/json",
@@ -82,14 +82,14 @@ export const getUserByNickName: Function = async (
     url: getUserApiUrl(nickname),
     method: "GET",
     data: {},
-    header: header,
+    header,
   };
   const userData: AxiosResponse = await sendRequest(body);
   return userData.data;
 };
 
 export const getActivityByUser: Function = async (
-  nickname: string
+  nickname: string,
 ): Promise<Object> => {
   const [url, query] = getGraphQLApi({ login: nickname });
   const header = {
@@ -107,7 +107,7 @@ export const getActivityByUser: Function = async (
 };
 
 export const getAccessTokenByCode: Function = async (
-  code: string
+  code: string,
 ): Promise<Object> => {
   const header = {
     Accept: "application/json",
@@ -121,8 +121,8 @@ export const getAccessTokenByCode: Function = async (
   const body: RequestObject = {
     url: getAccessTokenByCodeUrl,
     method: "POST",
-    data: data,
-    header: header,
+    data,
+    header,
   };
   const result: AxiosResponse = await sendRequest(body);
   return result.data;

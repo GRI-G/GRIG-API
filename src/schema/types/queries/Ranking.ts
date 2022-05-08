@@ -21,8 +21,8 @@ export const userRanking = {
 
 export const hasGeneration = {
   type: "Generation",
-  resolve: async (_: any, __: any, ___: any) =>
-    await connectMongoDB(async () =>
+  resolve: (_: any, __: any, ___: any) =>
+    connectMongoDB(async () =>
       sortBy((r) => r._id, await getKindOfGenaration()),
     )(),
 };

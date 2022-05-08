@@ -7,14 +7,12 @@ export interface RequestObject {
   header: Object;
 }
 
-export const sendRequest: Function = async (
-  arg: RequestObject
-): Promise<AxiosResponse<any>> => {
-  const res = await axios({
+export const sendRequest: Function = (
+  arg: RequestObject,
+): Promise<AxiosResponse<any>> =>
+  axios({
     method: arg.method,
     url: arg.url,
     data: arg.data,
     headers: arg.header,
   });
-  return res;
-};
