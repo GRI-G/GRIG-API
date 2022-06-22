@@ -66,8 +66,6 @@ functions:
 package:
   patterns:
     - "!node_modules/**/query-engine-**"
-    - "!node_modules/@prisma/engines/**"
-    - node_modules/.prisma/client/query-engine-rhel-*
 
 plugins:
   - serverless-plugin-typescript
