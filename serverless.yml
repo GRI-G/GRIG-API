@@ -42,27 +42,6 @@ functions:
           path: graphql
           method: get
           cors: true
-  auth:
-    handler: auth.authUserByOAuth
-    events:
-      - http:
-          path: auth
-          method: get
-          cors: false
-  email_auth:
-    handler: auth.authUserByEmail
-    events:
-      - http:
-          path: email/{token}
-          method: get
-          cors: false
-  send_email:
-    handler: auth.authEmail
-    events:
-      - http:
-          path: send-email
-          method: post
-          cors: false
 package:
   patterns:
     - "!node_modules/**/query-engine-**"
